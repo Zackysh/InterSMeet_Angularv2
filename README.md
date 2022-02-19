@@ -1,4 +1,4 @@
-﻿# InterSMeet_Angular 🎨
+﻿# InterSMeet_Angular V2 🎨
 
 <p align="center">
   <a target="blank"><img src="https://i.imgur.com/izr4ud3.jpeg" width="180" alt="Nest Logo" /></a>
