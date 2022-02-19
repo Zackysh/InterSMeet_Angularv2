@@ -17,35 +17,24 @@
         </a>
       </div>
 
-      <!-- Alert -->
-      <fuse-alert
-        class="mt-8 -mb-4"
-        *ngIf="showAlert"
-        [appearance]="'outline'"
-        [showIcon]="false"
-        [type]="alert.type"
-        [@shake]="alert.type === 'error'">
-        {{alert.message}}
-      </fuse-alert>
-
       <!-- Sign in form -->
       <form
         class="mt-8"
         [formGroup]="signInForm"
         #signInNgForm="ngForm">
 
-        <!-- Email field -->
+        <!-- Credential field -->
         <mat-form-field class="w-full">
-          <mat-label>Email address</mat-label>
+          <mat-label>Email or Username</mat-label>
           <input
-            id="email"
+            id="credential"
             matInput
-            [formControlName]="'email'">
-          <mat-error *ngIf="signInForm.get('email').hasError('required')">
-            Email address is required
+            [formControlName]="'credential'">
+          <mat-error *ngIf="signInForm.get('credential').hasError('required')">
+            Credential is required
           </mat-error>
-          <mat-error *ngIf="signInForm.get('email').hasError('email')">
-            Please enter a valid email address
+          <mat-error *ngIf="signInForm.get('credential').hasError('user-not-found')">
+            User not found with this credentials
           </mat-error>
         </mat-form-field>
 
@@ -72,18 +61,16 @@
               *ngIf="passwordField.type === 'text'"
               [svgIcon]="'heroicons_solid:eye-off'"></mat-icon>
           </button>
-          <mat-error>
+          <mat-error *ngIf="signInForm.get('password').hasError('required')">
             Password is required
+          </mat-error>
+          <mat-error *ngIf="signInForm.get('password').hasError('wrong-password')">
+            Wrong password
           </mat-error>
         </mat-form-field>
 
         <!-- Actions -->
         <div class="inline-flex items-end justify-between w-full mt-1.5">
-          <mat-checkbox
-            [color]="'primary'"
-            [formControlName]="'rememberMe'">
-            Remember me
-          </mat-checkbox>
           <a
             class="text-md font-medium text-primary-500 hover:underline"
             [routerLink]="['/forgot-password']">Forgot password?
