@@ -69,8 +69,8 @@ export const appRoutes: Route[] = [
   // Auth routes for authenticated users
   {
     path: '',
-    // canActivate: [AuthGuard],
-    // canActivateChild: [AuthGuard],
+    canActivate: [AuthGuard],
+    canActivateChild: [AuthGuard],
     component: LayoutComponent,
     data: {
       layout: 'empty',
@@ -81,13 +81,6 @@ export const appRoutes: Route[] = [
         loadChildren: () =>
           import('app/modules/auth/sign-out/sign-out.module').then(
             m => m.AuthSignOutModule
-          ),
-      },
-      {
-        path: 'unlock-session',
-        loadChildren: () =>
-          import('app/modules/auth/unlock-session/unlock-session.module').then(
-            m => m.AuthUnlockSessionModule
           ),
       },
     ],

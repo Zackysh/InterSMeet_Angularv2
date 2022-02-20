@@ -1,104 +1,109 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
-import { FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
+import { UserService } from 'app/core/user/user.service';
+import { FormHelper } from 'app/shared/form.helper';
+import { combineLatest, Observable, of, switchMap } from 'rxjs';
+import { Language, Province } from './../../../core/user/user.types';
 
 @Component({
-    selector     : 'auth-sign-up',
-    templateUrl  : './sign-up.component.html',
-    encapsulation: ViewEncapsulation.None,
-    animations   : fuseAnimations
+  selector: 'auth-sign-up',
+  templateUrl: './sign-up.component.html',
+  encapsulation: ViewEncapsulation.None,
+  animations: fuseAnimations,
 })
-export class AuthSignUpComponent implements OnInit
-{
-    @ViewChild('signUpNgForm') signUpNgForm: NgForm;
+export class AuthSignUpComponent implements OnInit {
+  @ViewChild('signUpNgForm') signUpNgForm: NgForm;
 
-    alert: { type: FuseAlertType; message: string } = {
-        type   : 'success',
-        message: ''
-    };
-    signUpForm: FormGroup;
-    showAlert: boolean = false;
+  signUpForm: FormGroup;
+  provinces: Province[];
+  languages: Language[];
 
-    /**
-     * Constructor
-     */
-    constructor(
-        private _authService: AuthService,
-        private _formBuilder: FormBuilder,
-        private _router: Router
-    )
-    {
+  constructor(
+    private _userService: UserService,
+    private _authService: AuthService,
+    private _formBuilder: FormBuilder,
+    private _router: Router,
+    private _formHelper: FormHelper,
+    private _snackBar: MatSnackBar
+  ) {}
+
+  // -----------------------------------------------------------------------------------------------------
+  // @ Lifecycle hooks
+  // -----------------------------------------------------------------------------------------------------
+
+  ngOnInit(): void {
+    // if access token ramains in localStorage,
+    // checkUsername | checkEmail will not work as expected
+    this._authService.signOut();
+
+    this.signUpForm = this._formBuilder.group({
+      username: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      provinceId: ['', Validators.required],
+      languageId: ['', Validators.required],
+      location: ['', Validators.required],
+      address: ['', Validators.required],
+      companyName: ['', Validators.required],
+    });
+
+    this._userService.findAllProvinces().subscribe((p) => (this.provinces = p));
+    this._userService.findAllLanguages().subscribe((l) => (this.languages = l));
+  }
+
+  // -----------------------------------------------------------------------------------------------------
+  // @ Public methods
+  // -----------------------------------------------------------------------------------------------------
+
+  signUp(): void {
+    if (this.signUpForm.invalid) {
+      return;
     }
 
-    // -----------------------------------------------------------------------------------------------------
-    // @ Lifecycle hooks
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * On init
-     */
-    ngOnInit(): void
-    {
-        // Create the form
-        this.signUpForm = this._formBuilder.group({
-                name      : ['', Validators.required],
-                email     : ['', [Validators.required, Validators.email]],
-                password  : ['', Validators.required],
-                company   : [''],
-                agreements: ['', Validators.requiredTrue]
-            }
-        );
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    // @ Public methods
-    // -----------------------------------------------------------------------------------------------------
-
-    /**
-     * Sign up
-     */
-    signUp(): void
-    {
-        // Do nothing if the form is invalid
-        if ( this.signUpForm.invalid )
-        {
-            return;
+    this.signUpForm.disable();
+    this.#asyncValidation()
+      .pipe(
+        switchMap((res) =>
+          res ? this._authService.signUp(this.signUpForm.value) : of(null)
+        )
+      )
+      .subscribe((response) => {
+        if (response?.user?.companyId) {
+          this.#navigateSignIn();
         }
+      });
+  }
 
-        // Disable the form
-        this.signUpForm.disable();
+  #asyncValidation(): Observable<boolean> {
+    return combineLatest([
+      this._authService.checkEmail(this.signUpForm.value.email),
+      this._authService.checkUsername(this.signUpForm.value.username),
+    ]).pipe(
+      switchMap((res) => {
+        if (!res[0]) {
+          this.signUpForm.enable();
+          const ctrl = this.signUpForm.get('email');
+          ctrl.setErrors({ ...ctrl.errors, 'not-available': 'true' });
+        }
+        if (!res[1]) {
+          this.signUpForm.enable();
+          const ctrl = this.signUpForm.get('username');
+          ctrl.setErrors({ ...ctrl.errors, 'not-available': 'true' });
+        }
+        return of(res[0] && res[1]);
+      })
+    );
+  }
 
-        // Hide the alert
-        this.showAlert = false;
-
-        // Sign up
-        this._authService.signUp(this.signUpForm.value)
-            .subscribe(
-                (response) => {
-
-                    // Navigate to the confirmation required page
-                    this._router.navigateByUrl('/confirmation-required');
-                },
-                (response) => {
-
-                    // Re-enable the form
-                    this.signUpForm.enable();
-
-                    // Reset the form
-                    this.signUpNgForm.resetForm();
-
-                    // Set the alert
-                    this.alert = {
-                        type   : 'error',
-                        message: 'Something went wrong, please try again.'
-                    };
-
-                    // Show the alert
-                    this.showAlert = true;
-                }
-            );
-    }
+  #navigateSignIn(): void {
+    this._snackBar.open('Account created successfully');
+    // Navigate to the redirect url
+    this._router.navigateByUrl('/sign-in');
+  }
 }

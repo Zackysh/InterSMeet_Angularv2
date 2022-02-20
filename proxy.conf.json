@@ -1,0 +1,11 @@
+{
+    "/core/*": {
+        "target": "https://localhost:7280/api",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true,
+        "pathRewrite": {
+            "^/core": ""
+        }
+    }
+}
