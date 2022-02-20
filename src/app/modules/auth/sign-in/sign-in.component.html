@@ -28,6 +28,7 @@
           <mat-label>Email or Username</mat-label>
           <input
             id="credential"
+            autocomplete="email"
             matInput
             [formControlName]="'credential'">
           <mat-error *ngIf="signInForm.get('credential').hasError('required')">

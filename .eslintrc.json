@@ -51,13 +51,6 @@
           }
         ],
         "@typescript-eslint/no-inferrable-types": "off",
-        "arrow-parens": [
-          "error",
-          "as-needed",
-          {
-            "requireForBlockBody": true
-          }
-        ],
         "brace-style": [
           "off",
           "off"

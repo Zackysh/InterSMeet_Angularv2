@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UserService } from 'app/core/user/user.service';
-import { catchError, Observable, of, switchMap } from 'rxjs';
+import { catchError, map, Observable, of, switchMap } from 'rxjs';
 import { User } from '../user/user.types';
 
 @Injectable()
@@ -100,13 +100,36 @@ export class AuthService {
 
   signOut(): Observable<any> {
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     this._authenticated = false;
 
     return of(true);
   }
 
   signUp(user: User): Observable<any> {
-    return this._httpClient.post('core/users/sign-in/company', user);
+    const userSignUpDto = { ...user };
+    return this._httpClient.post('core/users/sign-up/company', {
+      userSignUpDto,
+      ...user,
+    });
+  }
+
+  checkUsername(username: string): Observable<boolean> {
+    return this._httpClient
+      .post(`core/users/check/username/?username=${username}`, {})
+      .pipe(
+        catchError(() => of(false)),
+        switchMap((err) => of(err !== false))
+      );
+  }
+
+  checkEmail(email: string): Observable<boolean> {
+    return this._httpClient
+      .post(`core/users/check/email/?email=${email}`, {})
+      .pipe(
+        catchError(() => of(false)),
+        switchMap((err) => of(err !== false))
+      );
   }
 
   /** Check the authentication status */

@@ -31,7 +31,7 @@ export class AuthInterceptor implements HttpInterceptor {
         if (
           error instanceof HttpErrorResponse &&
           error.status === 401 &&
-          !['sign-in'].some(url => error.url.includes(url))
+          !['sign-in'].some((url) => error.url.includes(url))
         ) {
           this._authService.signOut();
           location.reload();
