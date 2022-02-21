@@ -1,16 +1,17 @@
 import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  Resolve,
-  RouterStateSnapshot,
-} from '@angular/router';
-import { forkJoin, Observable } from 'rxjs';
-import { MessagesService } from 'app/layout/common/messages/messages.service';
+import
+  {
+    ActivatedRouteSnapshot,
+    Resolve,
+    RouterStateSnapshot
+  } from '@angular/router';
 import { NavigationService } from 'app/core/navigation/navigation.service';
-
-import { QuickChatService } from 'app/layout/common/quick-chat/quick-chat.service';
-
 import { UserService } from 'app/core/user/user.service';
+import { MessagesService } from 'app/layout/common/messages/messages.service';
+import { QuickChatService } from 'app/layout/common/quick-chat/quick-chat.service';
+import { forkJoin, Observable } from 'rxjs';
+
+
 
 @Injectable({
   providedIn: 'root',
