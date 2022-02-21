@@ -126,8 +126,7 @@ export class AuthService {
             this.refreshToken = response.refreshToken;
             this._authenticated = true;
             this._userService.user = response.user;
-            // eslint-disable-next-line no-debugger
-            debugger;
+
             this.mailVerified = response.user.emailVerified ? true : false;
 
             // Return a new observable with the response
@@ -174,8 +173,6 @@ export class AuthService {
 
   /** Check the authentication status */
   check(): Observable<boolean> {
-    // eslint-disable-next-line no-debugger
-    debugger;
     if (this._authenticated && this.mailVerified) {
       return of(true);
     }

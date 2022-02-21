@@ -82,8 +82,6 @@ export class NoAuthGuard implements CanActivate, CanActivateChild, CanLoad {
     // Check the authentication status
     return this._authService.check().pipe(
       switchMap((authenticated) => {
-        // eslint-disable-next-line no-debugger
-        debugger;
         // If the user is authenticated...
         if (authenticated) {
           // Redirect to the root
