@@ -34,9 +34,68 @@ export class AuthService {
     localStorage.setItem('refreshToken', token);
   }
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  get mailVerified(): boolean {
+    return JSON.parse(localStorage.getItem('mailVerified')) === true;
+  }
+
+  set mailVerified(verified: boolean) {
+    localStorage.setItem('mailVerified', `${verified}`);
+  }
+
   // -----------------------------------------------------------------------------------------------------
   // @ Public methods
   // -----------------------------------------------------------------------------------------------------
+
+  // -----------------------------------------------------------------------------------------------------
+  // @ Email
+  // -----------------------------------------------------------------------------------------------------
+
+  emailVerification(accessToken: string, code: string): Observable<any> {
+    return this._httpClient
+      .post(
+        `core/users/confirm-email/${code}`,
+        {},
+        { headers: { authorization: accessToken } }
+      )
+      .pipe(
+        catchError(() => of(false)),
+        switchMap((err?: boolean) => {
+          if (err !== false) {
+            this.mailVerified = true;
+            return of(true);
+          }
+          return of(false);
+        })
+      );
+  }
+
+  /**
+   * Send email verification code.
+   *
+   * @returns true if email is sent
+   * @returns false if email was already verified
+   */
+  sendMailVerificationCode(): Observable<any> {
+    return this._httpClient
+      .post(
+        'core/users/send-confirm-email',
+        {},
+        { headers: { authorization: this.accessToken } }
+      )
+      .pipe(
+        catchError(() =>
+          // already verified
+          of(false)
+        ),
+        switchMap((err) => {
+          if (err !== false) {
+            return of(true);
+          }
+          return of(false);
+        })
+      );
+  }
 
   forgotPassword(email: string): Observable<any> {
     return this._httpClient.post('api/auth/forgot-password', email);
@@ -49,58 +108,38 @@ export class AuthService {
   signIn(credentials: {
     email: string;
     password: string;
-  }): Observable<User | null | number> {
-    if (this._authenticated) {
-      // already authenticated
-      return of(null);
-    }
-
+  }): Observable<User | number> {
     return this._httpClient
       .post('core/users/sign-in/company', credentials, {})
       .pipe(
         catchError((error: HttpErrorResponse) => of(error.status)),
-        switchMap((response: any) => {
-          if (typeof response === 'number') {
-            return of(response);
+        switchMap(
+          (response: {
+            accessToken: string;
+            refreshToken: string;
+            user: User;
+          }) => {
+            if (typeof response === 'number') {
+              return of(response);
+            }
+            this.accessToken = response.accessToken;
+            this.refreshToken = response.refreshToken;
+            this._authenticated = true;
+            this._userService.user = response.user;
+
+            this.mailVerified = response.user.emailVerified ? true : false;
+
+            // Return a new observable with the response
+            return of(response.user);
           }
-          this.accessToken = response.accessToken;
-          this.refreshToken = response.refreshToken;
-          this._authenticated = true;
-          this._userService.user = response.user;
-
-          // Return a new observable with the response
-          return of(response.user);
-        })
-      );
-  }
-
-  signInUsingToken(): Observable<any> {
-    return this._httpClient
-      .post('core/users/refresh', {
-        refreshToken: this.refreshToken,
-      })
-      .pipe(
-        catchError(() => {
-          this._authenticated = false;
-          return of(false);
-        }),
-        switchMap((response: any) => {
-          if (!response) {
-            return of(false);
-          }
-          this.accessToken = response.accessToken;
-          this.refreshToken = response.refreshToken;
-          this._authenticated = true;
-          this._userService.user = response.user;
-
-          return of(true);
-        })
+        )
       );
   }
 
   signOut(): Observable<any> {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('mailVerified');
     this._authenticated = false;
 
     return of(true);
@@ -134,10 +173,10 @@ export class AuthService {
 
   /** Check the authentication status */
   check(): Observable<boolean> {
-    if (this._authenticated) {
+    if (this._authenticated && this.mailVerified) {
       return of(true);
     }
 
-    return of(this.accessToken ? true : false);
+    return of(this.accessToken && this.mailVerified ? true : false);
   }
 }

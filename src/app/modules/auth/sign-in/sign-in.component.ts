@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { AuthService } from 'app/core/auth/auth.service';
+import { User } from 'app/core/user/user.types';
 
 @Component({
   selector: 'auth-sign-in',
@@ -45,23 +46,31 @@ export class AuthSignInComponent implements OnInit {
 
     this._authService
       .signIn(this.signInForm.value)
-      .subscribe((response: any) => {
-        this.signInForm.enable();
-        if (response === null) {
-          // already signed-in
-          this._navigateHome();
-        } else if (response.companyId) {
-          this._navigateHome();
-        } else if (response === 401) {
+      .subscribe((response: User) => {
+        if (response?.companyId) {
+          if (response.emailVerified) {
+            this._navigateHome();
+          } else {
+            this._navigateEF();
+          }
+        } else if ((response as any) === 401) {
           // wrong password
+          this.signInForm.enable();
           const ctrl = this.signInForm.get('password');
           ctrl.setErrors({ ...ctrl.errors, 'wrong-password': true });
-        } else if (response === 404) {
+        } else if ((response as any) === 404) {
           // user not found
+          this.signInForm.enable();
           const ctrl = this.signInForm.get('credential');
           ctrl.setErrors({ ...ctrl.errors, 'user-not-found': true });
         }
       });
+  }
+
+  _navigateEF(): void {
+    console.log('ef ==========');
+    // Navigate to the redirect url
+    this._router.navigateByUrl('/email-verification');
   }
 
   _navigateHome(): void {
