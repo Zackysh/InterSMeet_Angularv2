@@ -97,12 +97,38 @@ export class AuthService {
       );
   }
 
-  forgotPassword(email: string): Observable<any> {
-    return this._httpClient.post('api/auth/forgot-password', email);
+  sendRestorePasswordCode(credential: string): Observable<any> {
+    return this._httpClient.post(
+      `core/users/send-restore-password/${credential}`,
+      {}
+    );
   }
 
-  resetPassword(password: string): Observable<any> {
-    return this._httpClient.post('api/auth/reset-password', password);
+  checkRestorePasswordCode(
+    credential: string,
+    restorePasswordCode: string
+  ): Observable<any> {
+    return this._httpClient
+      .post('core/users/check-restore-password', {
+        credential,
+        restorePasswordCode,
+      })
+      .pipe(
+        catchError(() => of(false)),
+        switchMap((err) => of(err !== false))
+      );
+  }
+
+  resetPassword(
+    credential: string,
+    newPassword: string,
+    restorePasswordCode: string
+  ): Observable<any> {
+    return this._httpClient.post('core/users/restore-password', {
+      restorePasswordCode,
+      credential,
+      newPassword,
+    });
   }
 
   signIn(credentials: {
@@ -151,6 +177,15 @@ export class AuthService {
       userSignUpDto,
       ...user,
     });
+  }
+
+  checkCredential(credential: string): Observable<boolean> {
+    return this._httpClient
+      .post(`core/users/check/credential/?credential=${credential}`, {})
+      .pipe(
+        catchError(() => of(false)),
+        switchMap((err) => of(err !== false))
+      );
   }
 
   checkUsername(username: string): Observable<boolean> {

@@ -1,28 +1,27 @@
 import {
   Component,
-  OnDestroy,
   OnInit,
   ViewChild,
   ViewEncapsulation,
+  OnDestroy,
 } from '@angular/core';
 import { FormBuilder, FormGroup, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertType } from '@fuse/components/alert';
-import { FuseValidators } from '@fuse/validators';
 import { AuthService } from 'app/core/auth/auth.service';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
-  selector: 'auth-reset-password',
-  templateUrl: './reset-password.component.html',
+  selector: 'auth-check-restore-password',
+  templateUrl: './check-restore-password.component.html',
   encapsulation: ViewEncapsulation.None,
   animations: fuseAnimations,
 })
-export class AuthResetPasswordComponent implements OnInit, OnDestroy {
-  @ViewChild('resetPasswordNgForm') resetPasswordNgForm: NgForm;
+export class AuthCheckRestorePasswordComponent implements OnInit, OnDestroy {
+  @ViewChild('checkRestorePasswordForm') checkRestorePasswordNgForm: NgForm;
 
-  resetPasswordForm: FormGroup;
+  checkRestorePasswordForm: FormGroup;
   showAlert: boolean = false;
   alert: { type: FuseAlertType; message: string } = {
     type: 'success',
@@ -31,7 +30,6 @@ export class AuthResetPasswordComponent implements OnInit, OnDestroy {
 
   _unsubscribeAll: Subject<any> = new Subject<any>();
   _credential: string;
-  _code: string;
 
   constructor(
     private _authService: AuthService,
@@ -45,23 +43,17 @@ export class AuthResetPasswordComponent implements OnInit, OnDestroy {
   // -----------------------------------------------------------------------------------------------------
 
   ngOnInit(): void {
-    this.resetPasswordForm = this._formBuilder.group(
-      {
-        password: ['', [Validators.required, Validators.minLength(6)]],
-        passwordConfirm: ['', [Validators.required, Validators.minLength(6)]],
-      },
-      {
-        validators: FuseValidators.mustMatch('password', 'passwordConfirm'),
-      }
-    );
+    this.checkRestorePasswordForm = this._formBuilder.group({
+      code: ['', [Validators.required, Validators.maxLength(6)]],
+    });
 
     this._route.params
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((params) => {
         this._credential = params['credential'];
-        this._code = params['code'];
         // eslint-disable-next-line no-debugger
         debugger;
+        this.sendRestoreCode();
       });
   }
 
@@ -74,23 +66,42 @@ export class AuthResetPasswordComponent implements OnInit, OnDestroy {
   // @ Public methods
   // -----------------------------------------------------------------------------------------------------
 
-  resetPassword(): void {
-    if (this.resetPasswordForm.invalid) {
+  sendRestoreCode(): void {
+    this._authService.sendRestorePasswordCode(this._credential).subscribe();
+  }
+
+  checkResetCode(): void {
+    if (this.checkRestorePasswordForm.invalid) {
       return;
     }
 
-    this.resetPasswordForm.disable();
+    this.checkRestorePasswordForm.disable();
     this.showAlert = false;
 
     this._authService
-      .resetPassword(
+      .checkRestorePasswordCode(
         this._credential,
-        this.resetPasswordForm.get('password').value,
-        this._code
+        this.checkRestorePasswordForm.get('code').value
       )
-      .subscribe();
-
-    this._authService.signOut();
-    this._router.navigateByUrl('/');
+      .subscribe((res) => {
+        // eslint-disable-next-line no-debugger
+        debugger;
+        if (res) {
+          this._router.navigate([
+            '/reset-password',
+            {
+              code: this.checkRestorePasswordForm.get('code').value,
+              credential: this._credential,
+            },
+          ]);
+        } else {
+          this.checkRestorePasswordForm.enable();
+          this.alert = {
+            type: 'error',
+            message: 'Wrong reset password ode',
+          };
+          this.showAlert = true;
+        }
+      });
   }
 }
