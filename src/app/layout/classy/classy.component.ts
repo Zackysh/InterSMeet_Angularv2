@@ -45,8 +45,6 @@ export class ClassyLayoutComponent implements OnInit, OnDestroy {
     this._userService.user$
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((user: User) => {
-        // eslint-disable-next-line no-debugger
-        debugger;
         this.user = user;
       });
 

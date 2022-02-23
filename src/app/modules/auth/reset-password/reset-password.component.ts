@@ -60,8 +60,6 @@ export class AuthResetPasswordComponent implements OnInit, OnDestroy {
       .subscribe((params) => {
         this._credential = params['credential'];
         this._code = params['code'];
-        // eslint-disable-next-line no-debugger
-        debugger;
       });
   }
 

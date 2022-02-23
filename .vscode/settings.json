@@ -1,5 +1,8 @@
 {
     "workbench.colorCustomizations": {
         "[Default Dark+]": {}
-    }
+    },
+    "cSpell.words": [
+        "Swal"
+    ]
 }

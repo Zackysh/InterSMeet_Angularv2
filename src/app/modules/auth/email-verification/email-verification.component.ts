@@ -1,3 +1,4 @@
+import { Subject, take, takeUntil } from 'rxjs';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -15,6 +16,8 @@ import { UserService } from 'app/core/user/user.service';
 export class EmailVerificationComponent implements OnInit {
   mailCodeForm: FormGroup;
 
+  private _unsubscribeAll: Subject<any> = new Subject<any>();
+
   constructor(
     private _formBuilder: FormBuilder,
     private _authService: AuthService,
@@ -29,13 +32,17 @@ export class EmailVerificationComponent implements OnInit {
       mailCode: ['', [Validators.required]],
     });
 
-    this._userService.user$.subscribe((user) => {
-      if (user.emailVerified) {
-        this._navigateHome();
-      } else {
-        this.sendMailCode();
-      }
-    });
+    this._userService.user$
+      .pipe(takeUntil(this._unsubscribeAll))
+      .subscribe((user) => {
+        if (user.emailVerified) {
+          this._unsubscribeAll.next(null);
+          this._unsubscribeAll.complete();
+          this._navigateHome();
+        } else {
+          this.sendMailCode();
+        }
+      });
   }
 
   submit(): void {
@@ -49,9 +56,12 @@ export class EmailVerificationComponent implements OnInit {
         this._authService.accessToken,
         this.mailCodeForm.value.mailCode
       )
+      .pipe(take(1))
       .subscribe((res) => {
         if (res) {
-          this._snackBar.open('Email verified successfully');
+          this._snackBar.open('Email verified successfully', null, {
+            duration: 8000,
+          });
           this._navigateHome();
         } else {
           this.mailCodeForm.enable();

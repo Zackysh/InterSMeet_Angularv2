@@ -51,8 +51,7 @@ export class AuthCheckRestorePasswordComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((params) => {
         this._credential = params['credential'];
-        // eslint-disable-next-line no-debugger
-        debugger;
+
         this.sendRestoreCode();
       });
   }
@@ -84,8 +83,6 @@ export class AuthCheckRestorePasswordComponent implements OnInit, OnDestroy {
         this.checkRestorePasswordForm.get('code').value
       )
       .subscribe((res) => {
-        // eslint-disable-next-line no-debugger
-        debugger;
         if (res) {
           this._router.navigate([
             '/reset-password',

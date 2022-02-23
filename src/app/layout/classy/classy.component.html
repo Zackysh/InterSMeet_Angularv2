@@ -7,15 +7,14 @@
   [mode]="isScreenSmall ? 'over' : 'side'"
   [name]="'mainNavigation'"
   [navigation]="navigation.default"
-  [opened]="!isScreenSmall">
+  [opened]="!isScreenSmall"
+>
   <!-- Navigation header hook -->
   <ng-container fuseVerticalNavigationContentHeader>
     <div class="flex items-center w-full p-4 pl-6">
       <!-- Logo -->
       <div class="flex items-center justify-center">
-        <img
-          class="w-16"
-          src="assets/images/logo/logo-mini-white.png">
+        <img class="w-16" src="assets/images/logo/logo-mini-white.png" />
       </div>
       <!-- Components -->
       <div class="flex items-center ml-auto">
@@ -24,18 +23,32 @@
     </div>
     <!-- User -->
     <div class="flex flex-col items-center w-full p-4">
-      <div class="relative w-24 h-24">
-        <mat-icon
-          class="icon-size-24"
-          [svgIcon]="'heroicons_solid:user-circle'"></mat-icon>
+      <div class="relative h-24 w-24">
+        <img
+          *ngIf="!user?.logoUrl"
+          class="w-24 h-24 rounded-full ring-4 ring-bg-card object-scale-down"
+          (error)="logo.src = 'http://www.adispetrol.com.co/tracking/traking-pedidos/img/logo-default.svg'"
+          [src]="user?.logoUrl"
+          alt="User avatar"
+          #logo
+        />
+        <img
+          *ngIf="user?.logoUrl"
+          class="w-24 h-24 rounded-full ring-4 ring-bg-card object-scale-down"
+          [src]="'http://www.adispetrol.com.co/tracking/traking-pedidos/img/logo-default.svg'"
+          alt="User avatar"
+        />
       </div>
       <div class="flex flex-col items-center justify-center w-full mt-6">
-        <div class="w-full whitespace-nowrap text-ellipsis overflow-hidden text-center leading-normal font-medium">
-          {{user.firstName | titlecase}} {{user.lastName | titlecase}}
+        <div
+          class="w-full whitespace-nowrap text-ellipsis overflow-hidden text-center leading-normal font-medium"
+        >
+          {{ user.firstName | titlecase }} {{ user.lastName | titlecase }}
         </div>
         <div
-          class="w-full mt-0.5 whitespace-nowrap text-ellipsis overflow-hidden text-center text-md leading-normal font-medium text-secondary">
-          {{user.email}}
+          class="w-full mt-0.5 whitespace-nowrap text-ellipsis overflow-hidden text-center text-md leading-normal font-medium text-secondary"
+        >
+          {{ user.email }}
         </div>
       </div>
     </div>
@@ -44,24 +57,19 @@
 
 <!-- Wrapper -->
 <div class="flex flex-col flex-auto w-full min-w-0">
-
   <!-- Header -->
   <div
-    class="relative flex flex-0 items-center w-full h-16 px-4 md:px-6 z-49 shadow dark:shadow-none dark:border-b bg-card dark:bg-transparent print:hidden">
+    class="relative flex flex-0 items-center w-full h-16 px-4 md:px-6 z-49 shadow dark:shadow-none dark:border-b bg-card dark:bg-transparent print:hidden"
+  >
     <!-- Navigation toggle button -->
-    <button
-      mat-icon-button
-      (click)="toggleNavigation('mainNavigation')">
+    <button mat-icon-button (click)="toggleNavigation('mainNavigation')">
       <mat-icon [svgIcon]="'heroicons_outline:menu'"></mat-icon>
     </button>
     <!-- Components -->
     <div class="flex items-center pl-2 ml-auto space-x-0.5 sm:space-x-2">
       <fuse-fullscreen class="hidden md:block"></fuse-fullscreen>
       <messages></messages>
-      <button
-        class="lg:hidden"
-        mat-icon-button
-        (click)="quickChat.toggle()">
+      <button class="lg:hidden" mat-icon-button (click)="quickChat.toggle()">
         <mat-icon [svgIcon]="'heroicons_outline:chat-alt-2'"></mat-icon>
       </button>
     </div>
@@ -73,7 +81,6 @@
              Otherwise, layout changes won't be registered and the view won't be updated! -->
     <router-outlet *ngIf="true"></router-outlet>
   </div>
-
 </div>
 
 <!-- Quick chat -->

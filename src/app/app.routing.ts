@@ -1,8 +1,8 @@
 import { Route } from '@angular/router';
+import { InitialDataResolver } from 'app/app.resolvers';
 import { AuthGuard } from 'app/core/auth/guards/auth.guard';
 import { NoAuthGuard } from 'app/core/auth/guards/noAuth.guard';
 import { LayoutComponent } from 'app/layout/layout.component';
-import { InitialDataResolver } from 'app/app.resolvers';
 
 // @formatter:off
 /* eslint-disable max-len */
@@ -121,6 +121,23 @@ export const appRoutes: Route[] = [
       initialData: InitialDataResolver,
     },
     children: [
+      // Profile
+      {
+        path: 'offers',
+        loadChildren: () =>
+          import('app/modules/auth/offers/offers.module').then(
+            (m) => m.OffersModule
+          ),
+      },
+
+      // Settings
+      {
+        path: 'settings',
+        loadChildren: () =>
+          import('app/modules/auth/settings/settings.module').then(
+            (m) => m.SettingsModule
+          ),
+      },
       {
         path: 'example',
         loadChildren: () =>
