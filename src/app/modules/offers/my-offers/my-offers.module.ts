@@ -8,8 +8,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { FuseCardModule } from '@fuse/components/card';
-import { OffersComponent } from 'app/modules/auth/offers/offers.component';
-import { profileRoutes } from 'app/modules/auth/offers/offers.routing';
+import { OffersComponent } from 'app/modules/offers/my-offers/my-offers.component';
+import { profileRoutes } from 'app/modules/offers/my-offers/my-offers.routing';
 import { SharedModule } from 'app/shared/shared.module';
 
 @NgModule({
