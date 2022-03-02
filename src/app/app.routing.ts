@@ -94,22 +94,22 @@ export const appRoutes: Route[] = [
   },
 
   // Landing routes
-  // {
-  //   path: '',
-  //   component: LayoutComponent,
-  //   data: {
-  //     layout: 'empty',
-  //   },
-  //   children: [
-  //     {
-  //       path: 'home',
-  //       loadChildren: () =>
-  //         import('app/modules/landing/home/home.module').then(
-  //           (m) => m.LandingHomeModule
-  //         ),
-  //     },
-  //   ],
-  // },
+  {
+    path: '',
+    component: LayoutComponent,
+    data: {
+      layout: 'empty',
+    },
+    children: [
+      {
+        path: 'home',
+        loadChildren: () =>
+          import('app/modules/landing/home/home.module').then(
+            (m) => m.LandingHomeModule
+          ),
+      },
+    ],
+  },
 
   // Admin routes
   {
@@ -121,20 +121,28 @@ export const appRoutes: Route[] = [
       initialData: InitialDataResolver,
     },
     children: [
-      // my-offers
+      // Profile
       {
         path: 'offers',
         loadChildren: () =>
-          import('app/modules/offers/my-offers/my-offers.module').then(
+          import('app/modules/auth/offers/offers.module').then(
             (m) => m.OffersModule
           ),
       },
+
       // Settings
       {
         path: 'settings',
         loadChildren: () =>
-          import('app/modules/settings/settings.module').then(
+          import('app/modules/auth/settings/settings.module').then(
             (m) => m.SettingsModule
+          ),
+      },
+      {
+        path: 'example',
+        loadChildren: () =>
+          import('app/modules/admin/example/example.module').then(
+            (m) => m.ExampleModule
           ),
       },
     ],

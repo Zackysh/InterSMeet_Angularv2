@@ -1,3 +1,5 @@
+import { Language, Province } from './../../../../core/user/user.types';
+import { combineLatest, Observable, of, switchMap } from 'rxjs';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -6,11 +8,10 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from 'app/core/auth/auth.service';
 import { UserService } from 'app/core/user/user.service';
-import { Language, Province, User } from 'app/core/user/user.types';
-import { combineLatest, Observable, of, switchMap } from 'rxjs';
+import { User } from 'app/core/user/user.types';
 import Swal from 'sweetalert2';
+import { AuthService } from 'app/core/auth/auth.service';
 
 @Component({
   selector: 'settings-account',

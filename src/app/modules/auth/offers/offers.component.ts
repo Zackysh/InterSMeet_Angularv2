@@ -8,12 +8,19 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { Offer } from 'app/core/user/offer/offer.types';
 import { UserService } from 'app/core/user/user.service';
-import { Province, PublicUser } from 'app/core/user/user.types';
-import { combineLatest, of, Subject, switchMap } from 'rxjs';
+import { Province, PublicUser, User } from 'app/core/user/user.types';
+import {
+  combineLatest,
+  of,
+  Subject,
+  switchMap,
+  takeUntil,
+  catchError,
+} from 'rxjs';
 
 @Component({
   selector: 'profile',
-  templateUrl: './my-offers.component.html',
+  templateUrl: './offers.component.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
