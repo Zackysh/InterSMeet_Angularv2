@@ -8,19 +8,12 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { Offer } from 'app/core/user/offer/offer.types';
 import { UserService } from 'app/core/user/user.service';
-import { Province, PublicUser, User } from 'app/core/user/user.types';
-import {
-  combineLatest,
-  of,
-  Subject,
-  switchMap,
-  takeUntil,
-  catchError,
-} from 'rxjs';
+import { Province, PublicUser } from 'app/core/user/user.types';
+import { combineLatest, of, Subject, switchMap } from 'rxjs';
 
 @Component({
   selector: 'profile',
-  templateUrl: './offers.component.html',
+  templateUrl: './my-offers.component.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -69,12 +62,10 @@ export class OffersComponent implements OnInit {
   }
 
   logoBroken(): void {
-    console.log('logo broken');
     this.logoUrlBroken = true;
   }
 
   backgroundBroken(): void {
-    console.log('background broken');
     this.backgroundUrlBroken = true;
   }
 }

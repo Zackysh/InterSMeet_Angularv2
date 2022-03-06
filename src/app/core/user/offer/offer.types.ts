@@ -29,3 +29,24 @@ export enum ApplicantStatus {
   accepted = 'Accepted',
   denied = 'Denied',
 }
+
+export interface OfferPagination {
+  page: number;
+  size: number;
+  skipExpired?: boolean;
+  privateData?: boolean;
+  search?: string;
+  // @ Filters
+  degreeId?: number;
+  familyId?: number;
+  levelId?: number;
+  // @ Salary
+  min?: number;
+  max?: number;
+}
+
+export interface OfferPaginationResponse {
+  pagination: OfferPagination;
+  results: Offer[];
+  total: number;
+}

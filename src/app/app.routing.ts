@@ -8,15 +8,15 @@ import { LayoutComponent } from 'app/layout/layout.component';
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 export const appRoutes: Route[] = [
-  // Redirect empty path to '/example'
-  { path: '', pathMatch: 'full', redirectTo: 'example' },
+  // Redirect empty path to '/root'
+  { path: '', pathMatch: 'full', redirectTo: 'root' },
 
-  // Redirect signed in user to the '/example'
+  // Redirect signed in user to the '/root'
   //
   // After the user signs in, the sign in page will redirect the user to the 'signed-in-redirect'
   // path. Below is another redirection for that path to redirect the user to the desired
   // location. This is a small convenience to keep all main routes together here on this file.
-  { path: 'signed-in-redirect', pathMatch: 'full', redirectTo: 'example' },
+  { path: 'signed-in-redirect', pathMatch: 'full', redirectTo: 'root' },
 
   // Auth routes for guests
   {
@@ -93,24 +93,6 @@ export const appRoutes: Route[] = [
     ],
   },
 
-  // Landing routes
-  {
-    path: '',
-    component: LayoutComponent,
-    data: {
-      layout: 'empty',
-    },
-    children: [
-      {
-        path: 'home',
-        loadChildren: () =>
-          import('app/modules/landing/home/home.module').then(
-            (m) => m.LandingHomeModule
-          ),
-      },
-    ],
-  },
-
   // Admin routes
   {
     path: '',
@@ -125,21 +107,25 @@ export const appRoutes: Route[] = [
       {
         path: 'offers',
         loadChildren: () =>
-          import('app/modules/auth/offers/offers.module').then(
+          import('app/modules/my-offers/my-offers.module').then(
             (m) => m.OffersModule
           ),
       },
-
+      // Profile
+/*       {
+        path: 'test',
+        component: Mail
+      }, */
       // Settings
       {
         path: 'settings',
         loadChildren: () =>
-          import('app/modules/auth/settings/settings.module').then(
+          import('app/modules/settings/settings.module').then(
             (m) => m.SettingsModule
           ),
       },
       {
-        path: 'example',
+        path: 'root',
         loadChildren: () =>
           import('app/modules/admin/example/example.module').then(
             (m) => m.ExampleModule

@@ -1,0 +1,23 @@
+<div class="flex flex-col px-4 flex-auto w-full">
+  <div
+    class="mt-10 mb-8 mx-6 text-4xl font-extrabold tracking-tight leading-none"
+  >
+    Filters
+  </div>
+
+  <!-- Add offer button -->
+  <button class="mx-6" mat-flat-button [color]="'primary'" (click)="addOffer()">
+    <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+    <span class="ml-2">Add new offer</span>
+  </button>
+
+  <!-- Skip expired -->
+  <div class="w-full mt-6 flex justify-center items-center">
+    <mat-checkbox
+      [color]="'primary'"
+      checked="true"
+      (change)="skipExpiredChange($event.checked)"
+      >Skip expired</mat-checkbox
+    >
+  </div>
+</div>

@@ -1,0 +1,101 @@
+<div class="flex flex-col max-w-240 md:min-w-160 max-h-screen -m-6">
+  <!-- Header -->
+  <div
+    class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 bg-primary text-on-primary"
+  >
+    <div class="text-lg font-medium">Applicant details</div>
+    <button mat-icon-button (click)="close()" [tabIndex]="-1">
+      <mat-icon
+        class="text-current"
+        [svgIcon]="'heroicons_outline:x'"
+      ></mat-icon>
+    </button>
+  </div>
+
+  <!-- Applicant data -->
+  <div class="flex flex-wrap p-6 sm:p-8 overflow-y-auto">
+    <div class="w-full flex flex-wrap">
+      <!-- First name -->
+      <div class="flex flex-wrap w-1/2">
+        <div class="w-full font-bold text-indigo-500">First name</div>
+        {{ applicant.firstName | titlecase }}
+      </div>
+      <!-- Birthdate -->
+      <div class="flex flex-wrap w-1/2">
+        <div class="w-full font-bold text-indigo-500">Birthdate</div>
+        {{ applicant.birthDate | date: "dd-MM-yyyy" }}
+      </div>
+    </div>
+    <div class="w-full flex flex-wrap mt-5">
+      <!-- Last name -->
+      <div class="w-1/2">
+        <div class="w-full font-bold text-indigo-500">Last name</div>
+        {{ applicant.lastName | titlecase }}
+      </div>
+      <!-- Email -->
+      <div class="w-1/2">
+        <div class="w-full font-bold text-indigo-500">Email</div>
+        {{ applicant.email }}
+      </div>
+    </div>
+
+    <div class="w-full flex flex-wrap mt-5">
+      <!-- Province -->
+      <div class="flex flex-wrap w-1/2">
+        <div class="w-full font-bold text-indigo-500">Province</div>
+        {{ province }}
+      </div>
+      <!-- Degree -->
+      <div class="flex flex-wrap w-1/2">
+        <div class="w-full font-bold text-indigo-500">Degree</div>
+        {{ degree }}
+      </div>
+    </div>
+    <div class="w-full flex flex-wrap mt-5">
+      <!-- Location -->
+      <div class="w-1/2">
+        <div class="w-full font-bold text-indigo-500">Location</div>
+        {{ applicant.location | titlecase }}
+      </div>
+      <!-- Average grades -->
+      <div class="w-1/2">
+        <div class="w-full font-bold text-indigo-500">Average grades</div>
+        {{ applicant.averageGrades }}
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="w-full">
+      <div class="flex justify-end mt-4">
+        <!-- Discard -->
+        <button class="ml-auto sm:ml-0" mat-stroked-button (click)="close()">
+          Close
+        </button>
+        <!-- Accept -->
+        <button
+          class="ml-auto sm:ml-3 bg-emerald-400"
+          mat-stroked-button
+          (click)="accept()"
+        >
+          Accept
+        </button>
+        <!-- Pending -->
+        <button
+          class="ml-auto sm:ml-3 bg-amber-400"
+          mat-stroked-button
+          (click)="pending()"
+        >
+          Pending
+        </button>
+        <!-- Discard -->
+        <button
+          class="ml-auto sm:ml-3 bg-red-400"
+          mat-stroked-button
+          (click)="deny()"
+        >
+          Deny
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

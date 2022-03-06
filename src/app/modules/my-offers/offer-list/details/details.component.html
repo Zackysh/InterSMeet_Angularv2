@@ -1,0 +1,279 @@
+<div
+  class="flex flex-col flex-auto overflow-y-auto lg:overflow-hidden bg-card dark:bg-default"
+>
+  <ng-container *ngIf="offer; else selectOffer">
+    <!-- Header -->
+    <div class="z-10 relative flex flex-col flex-0 w-full border-b">
+      <!-- Toolbar -->
+      <div
+        class="flex items-center min-h-16 px-4 md:px-6 border-b bg-gray-50 dark:bg-transparent"
+      >
+        <!-- Back button -->
+        <mat-button
+          matRipple
+          class="md:-ml-2 px-3"
+          mat-icon-button
+          (click)="resetOffer()"
+        >
+          <mat-icon [svgIcon]="'heroicons_outline:arrow-left'"></mat-icon>
+        </mat-button>
+
+        <div class="w-full"></div>
+
+        <!-- Options menu -->
+        <!-- Other actions button & menu -->
+        <button class="ml-2" mat-icon-button [matMenuTriggerFor]="offerMenu">
+          <mat-icon [svgIcon]="'heroicons_outline:dots-vertical'"></mat-icon>
+        </button>
+        <mat-menu #offerMenu="matMenu">
+          <!-- Edit -->
+          <button mat-menu-item (click)="edit()">
+            <mat-icon [svgIcon]="'heroicons_outline:pencil-alt'"></mat-icon>
+            <span>Edit</span>
+          </button>
+          <!-- Delete -->
+          <button mat-menu-item (click)="remove()">
+            <mat-icon [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+            <span>Delete</span>
+          </button>
+        </mat-menu>
+      </div>
+
+      <!-- Subject and Labels -->
+      <div class="flex flex-wrap items-center py-5 px-6">
+        <!-- Offer name -->
+        <div class="flex flex-auto my-1 mr-4 text-2xl">
+          {{ offer.name }}
+          <div *ngIf="expired" class="flex ml-3 justify-center items-center text-sm text-gray-600">
+            Expired!
+            <mat-icon
+              class="ml-3 icon-size-4 text-red-500 dark:text-red-600"
+              [svgIcon]="'heroicons_solid:exclamation-circle'"
+            ></mat-icon>
+          </div>
+        </div>
+        <!-- Labels -->
+        <ng-container>
+          <div class="flex flex-wrap items-center justify-start -mx-1">
+            <ng-container>
+              <div
+                class="m-1 py-0.5 px-2.5 rounded-full text-sm font-medium whitespace-nowrap"
+              >
+                deadline - {{ offer.deadLine | date: "yyyy-MM-dd" }}
+              </div>
+            </ng-container>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Threads -->
+    <div
+      class="flex flex-col flex-auto shrink-0 lg:shrink p-3 lg:overflow-y-auto bg-gray-100 dark:bg-transparent"
+      fuseScrollReset
+    >
+      <!-- Thread -->
+      <div
+        class="flex flex-col flex-0 w-full shadow rounded-2xl overflow-hidden bg-card dark:bg-black dark:bg-opacity-10"
+      >
+        <div class="flex flex-col py-8 px-6">
+          <!-- Header -->
+          <div class="flex items-center w-full">
+            <!-- Sender avatar -->
+            <div
+              class="flex flex-0 items-center justify-center w-10 h-10 rounded-full overflow-hidden"
+            >
+              <div class="w-full h-full flex justify-center items-center">
+                <mat-icon [svgIcon]="'heroicons_solid:briefcase'"></mat-icon>
+              </div>
+            </div>
+
+            <!-- Info -->
+            <div class="ml-4 min-w-0">
+              <!-- Applicants -->
+              <div class="font-semibold truncate">Applicants</div>
+
+              <!-- To -->
+              <div class="flex items-center mt-0.5 leading-5">
+                <div>{{ offer.applicantCount }}</div>
+                <div class="ml-3" [ngPlural]="offer.applicantCount">
+                  <ng-template ngPluralCase="=0" class="ml-1 font-semibold">
+                    Applicants
+                  </ng-template>
+                  <ng-template ngPluralCase="=1" class="ml-1 font-semibold">
+                    Applicant
+                  </ng-template>
+                  <ng-template ngPluralCase="other" class="ml-1 font-semibold">
+                    Applicants
+                  </ng-template>
+                </div>
+
+                <!-- Applicant details panel button -->
+                <button
+                  class="w-5 h-5 min-h-5 ml-1"
+                  mat-icon-button
+                  (click)="openInfoDetailsPanel()"
+                  #infoDetailsPanelOrigin
+                >
+                  <mat-icon
+                    class="icon-size-5"
+                    [svgIcon]="'heroicons_solid:chevron-down'"
+                  ></mat-icon>
+                </button>
+
+                <!-- Info details panel -->
+                <ng-template #infoDetailsPanel>
+                  <div
+                    class="flex flex-col py-4 px-6 w-full max-w-160 space-y-1.5 border text-md rounded shadow-md overflow-auto bg-card"
+                  >
+                    <!-- Pending -->
+                    <div class="flex">
+                      <div class="min-w-16 font-medium text-left">Pending:</div>
+                      <div class="pl-2 whitespace-pre-wrap">
+                        {{ pendingApplicants() }}
+                      </div>
+                    </div>
+                    <!-- Accepted -->
+                    <div class="flex">
+                      <div class="min-w-16 font-medium text-left">
+                        Accepted:
+                      </div>
+                      <div class="pl-2 whitespace-pre-wrap">
+                        {{ acceptedApplicants() }}
+                      </div>
+                    </div>
+                    <!-- Denied -->
+                    <div class="flex">
+                      <div class="min-w-16 font-medium text-left">Denied:</div>
+                      <div class="pl-2 whitespace-pre-wrap">
+                        {{ deniedApplicants() }}
+                      </div>
+                    </div>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div
+            class="mt-8 whitespace-pre-line leading-relaxed"
+            [innerHTML]="offer.description"
+          ></div>
+
+          <!-- Info 2 -->
+          <ng-container>
+            <div class="flex flex-col w-full">
+              <!-- Salary -->
+              <div class="flex items-center mt-12">
+                <mat-icon
+                  class="icon-size-5"
+                  [svgIcon]="'heroicons_solid:currency-euro'"
+                ></mat-icon>
+                <div class="ml-2 font-semibold">Salary: {{ offer.salary }}</div>
+              </div>
+              <!-- Schedule -->
+              <div *ngIf="offer.schedule" class="flex items-center mt-4">
+                <mat-icon
+                  class="icon-size-5"
+                  [svgIcon]="'heroicons_solid:calendar'"
+                ></mat-icon>
+                <div class="ml-2 font-semibold">
+                  Schedule: {{ offer.schedule }}
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Footer -->
+        <div
+          *ngIf="offer.applicantCount > 0"
+          class="flex flex-wrap w-full p-6 border-t bg-gray-50 dark:bg-transparent"
+        >
+          <div class="text-xl font-bold text-center mb-4 w-full">
+            Applicants
+          </div>
+          <ng-container *ngFor="let applicant of offer.applicants">
+            <!-- Item -->
+            <div
+              (click)="toggleApplicant(applicant)"
+              class="w-full h-auto px-4 pb-3 relative flex border-t first:border-0 hover:bg-hover cursor-pointer transition ease-in-out rounded-md"
+            >
+              <!-- Item content -->
+
+              <!-- Avatar -->
+              <div class="w-13 flex justify-center items-center">
+                <ng-container *ngIf="applicant.avatarId">
+                  <div
+                    class="flex flex-0 items-center justify-center w-13 h-13 rounded-full overflow-hidden"
+                  >
+                    <img
+                      class="object-cover w-full h-full"
+                      [src]="getAvatarUrl(applicant.avatarId)"
+                      alt="Contact avatar"
+                    />
+                  </div>
+                </ng-container>
+              </div>
+              <div class="w-full flex pl-5 pt-5 flex-wrap">
+                <div class="w-full lg:w-1/2 justify-start">
+                  <!-- Name -->
+                  <div class="font-semibold truncate">
+                    {{ applicant.firstName | titlecase }}
+                    {{ applicant.lastName | titlecase }}
+                  </div>
+                  <!-- Email -->
+                  <div class="truncate">
+                    <strong>Email:&nbsp;</strong> {{ applicant.email }}
+                  </div>
+                </div>
+                <div class="w-full lg:w-1/2 justify-start">
+                  <!-- Birthdate -->
+                  <div class="truncate">
+                    <strong>Birthdate:&nbsp;</strong>
+                    {{ applicant.birthDate | date: "dd-MM-yyyy" }}
+                  </div>
+                  <!-- Status -->
+                  <div class="flex items-center">
+                    <strong>Status:&nbsp;</strong>{{ applicant.status }}
+                    <mat-icon
+                      *ngIf="applicant.status === 'Accepted'"
+                      class="icon-size-6 ml-2 text-emerald-400"
+                      [svgIcon]="'heroicons_outline:badge-check'"
+                    ></mat-icon>
+                    <mat-icon
+                      *ngIf="applicant.status === 'Pending'"
+                      class="icon-size-6 ml-2 text-yellow-400"
+                      [svgIcon]="'mat_outline:pending'"
+                    ></mat-icon>
+                    <mat-icon
+                      *ngIf="applicant.status === 'Denied'"
+                      class="icon-size-6 ml-2 text-red-400"
+                      [svgIcon]="'mat_outline:cancel'"
+                    ></mat-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Select offer -->
+  <ng-template #selectOffer>
+    <div
+      class="flex flex-col flex-auto items-center justify-center bg-gray-100 dark:bg-transparent"
+    >
+      <mat-icon
+        class="icon-size-24"
+        [svgIcon]="'iconsmind:mailbox_empty'"
+      ></mat-icon>
+      <div class="mt-4 text-2xl font-semibold tracking-tight text-secondary">
+        Select a offer
+      </div>
+    </div>
+  </ng-template>
+</div>

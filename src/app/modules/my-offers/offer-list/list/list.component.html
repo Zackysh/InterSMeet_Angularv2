@@ -1,0 +1,159 @@
+<div class="relative flex flex-auto w-full bg-card dark:bg-transparent">
+  <!-- Offers list -->
+  <ng-container *ngIf="offers && offers.length > 0; else noOffers">
+    <div
+      class="relative flex flex-auto flex-col w-full min-w-0 lg:min-w-90 lg:max-w-120 border-r z-10"
+    >
+      <!-- Header -->
+      <div
+        class="relative flex flex-0 items-center justify-between h-16 px-4 border-b bg-gray-50 dark:bg-transparent"
+      >
+        <div class="flex items-center">
+          <!-- Sidebar toggle button -->
+          <button mat-icon-button (click)="offerListComponent.drawer.toggle()">
+            <mat-icon [svgIcon]="'heroicons_outline:adjustments'"></mat-icon>
+          </button>
+          <div class="ml-2 font-semibold uppercase">My Offers</div>
+        </div>
+
+        <!-- Pagination -->
+        <div *ngIf="pagination" class="flex items-center">
+          <!-- Info -->
+          <div class="flex items-center mr-3 text-md font-medium">
+            <mat-select
+              class="w-10 mr-5"
+              value="15"
+              (selectionChange)="sizeChange($event.value)"
+            >
+              <mat-option value="5">5</mat-option>
+              <mat-option value="10">10</mat-option>
+              <mat-option value="15">15</mat-option>
+              <mat-option value="25">25</mat-option>
+              <mat-option value="50">50</mat-option>
+              <mat-option value="100">100</mat-option>
+            </mat-select>
+            <span>{{ startIndex }}</span>
+            <span class="mx-1 text-secondary">-</span>
+            <span>{{ lastIndex }}</span>
+            <span class="mx-1 text-secondary">of</span>
+            <span>{{ totalCount }}</span>
+          </div>
+          <!-- Previous page button -->
+          <!-- [disabled]="pagination.page === 0" -->
+          <div
+            class="w-8 h-8 min-h-8 flex content-center"
+            mat-icon-button
+            (click)="previousPage()"
+          >
+            <mat-icon
+              class="self-center icon-size-5"
+              [ngClass]="{ 'text-gray-300': pagination.page === 0 }"
+              [svgIcon]="'heroicons_solid:chevron-left'"
+            ></mat-icon>
+          </div>
+          <!-- Next page button-->
+          <div
+            class="w-8 h-8 min-h-8 flex content-center"
+            mat-icon-button
+            [disabled]="pagination.page === lastPage"
+            (click)="nextPage()"
+          >
+            <mat-icon
+              class="self-center icon-size-5"
+              [ngClass]="{ 'text-gray-300': pagination.page === lastPage - 1 }"
+              [svgIcon]="'heroicons_solid:chevron-right'"
+            ></mat-icon>
+          </div>
+        </div>
+
+        <!-- Loading bar -->
+        <mat-progress-bar
+          class="absolute inset-x-0 bottom-0 h-0.5"
+          *ngIf="offersLoading"
+          [mode]="'indeterminate'"
+        ></mat-progress-bar>
+      </div>
+
+      <!-- Offer list -->
+      <div class="overflow-y-auto" #offerList>
+        <!-- Item loop -->
+        <ng-container
+          *ngFor="let offer of offers; let i = index; trackBy: trackByFn"
+        >
+          <!-- Item -->
+          <a
+            class="relative flex border-t first:border-0 hover:bg-hover"
+            (click)="onOfferSelected(offer)"
+          >
+            <!-- Item content -->
+            <div
+              class="flex flex-col items-start justify-start w-full py-6 pr-4 pl-5 border-l-4 border-transparent"
+              [ngClass]="{
+                'border-primary': true,
+                'bg-primary-50 dark:bg-black dark:bg-opacity-5':
+                  selectedOffer && selectedOffer.id === offer.offerId
+              }"
+            >
+              <!-- Info -->
+              <div class="flex items-center w-full">
+                <!-- Name -->
+                <div class="mr-2 font-semibold truncate">{{ offer.name }}</div>
+                <!-- Deadline -->
+                <div
+                  class="ml-auto text-md text-right whitespace-nowrap text-hint"
+                >
+                  {{ offer.deadLine | date: "dd-MM-yyyy" }}
+                  <div
+                    *ngIf="expired(offer.deadLine)"
+                    class="flex ml-3 justify-center items-center text-sm text-gray-600"
+                  >
+                    Expired!
+                    <mat-icon
+                      class="ml-3 icon-size-4 text-red-500 dark:text-red-600"
+                      [svgIcon]="'heroicons_solid:exclamation-circle'"
+                    ></mat-icon>
+                  </div>
+                </div>
+              </div>
+
+              <!-- INFO 3 -->
+              <div
+                class="mt-2 leading-normal line-clamp-2 text-secondary"
+                [innerHtml]="offer.description"
+              ></div>
+            </div>
+          </a>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- No offers template -->
+  <ng-template #noOffers>
+    <div
+      class="z-100 absolute inset-0 flex flex-auto flex-col items-center justify-center bg-gray-100 dark:bg-transparent"
+    >
+      <mat-icon
+        class="icon-size-24"
+        [svgIcon]="'iconsmind:mailbox_empty'"
+      ></mat-icon>
+      <div class="mt-4 text-2xl font-semibold tracking-tight text-secondary">
+        There are no offers yet
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- Offer details -->
+  <ng-container *ngIf="offers && offers.length > 0">
+    <div
+      class="flex-auto"
+      [ngClass]="{
+        'z-20 absolute inset-0 lg:static lg:inset-auto flex':
+          selectedOffer && selectedOffer.offerId,
+        'hidden lg:flex': !selectedOffer || !selectedOffer.offerId
+      }"
+    >
+      <router-outlet></router-outlet>
+    </div>
+  </ng-container>
+</div>

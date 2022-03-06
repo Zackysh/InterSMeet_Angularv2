@@ -1,9 +1,17 @@
-import { Language, PublicUser, UpdateUser } from './user.types';
+import { ApplicantStatus } from 'app/core/user/offer/offer.types';
+import {
+  Degree,
+  Language,
+  Level,
+  PublicUser,
+  UpdateUser,
+  Family,
+} from './user.types';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable, ReplaySubject, tap } from 'rxjs';
 import { Province, User } from 'app/core/user/user.types';
-import { Offer } from './offer/offer.types';
+import { Applicant, Offer } from './offer/offer.types';
 
 @Injectable({
   providedIn: 'root',
@@ -41,22 +49,42 @@ export class UserService {
     return this._httpClient.get<Province[]>('core/users/provinces');
   }
 
+  findAllLevels(): Observable<Level[]> {
+    return this._httpClient.get<Level[]>('core/students/levels');
+  }
+
+  findAllFamilies(): Observable<Family[]> {
+    return this._httpClient.get<Family[]>('core/students/families');
+  }
+
+  findAllDegrees(): Observable<Degree[]> {
+    return this._httpClient.get<Degree[]>('core/students/degrees');
+  }
+
   findAllLanguages(): Observable<Language[]> {
     return this._httpClient.get<Language[]>('core/users/languages');
   }
 
   /** Get the current logged in user data */
   get(): Observable<User> {
-    return this._httpClient.get<User>('core/companies/profile').pipe(
-      tap((user) => {
-        console.log(user);
-        this._user.next(user);
-      })
-    );
+    return this._httpClient
+      .get<User>('core/companies/profile')
+      .pipe(tap((user) => this._user.next(user)));
   }
 
   findPublicProfile(username: string): Observable<PublicUser> {
     return this._httpClient.get<User>(`core/companies/profile/${username}`);
+  }
+
+  updateApplicationStatus(
+    offerId: number,
+    studentId: number,
+    status: ApplicantStatus
+  ): Observable<Applicant> {
+    return this._httpClient.put<Applicant>(
+      `core/offers/applications/update-status/${offerId}/${studentId}`,
+      { status }
+    );
   }
 
   update(user: User): Observable<User> {
