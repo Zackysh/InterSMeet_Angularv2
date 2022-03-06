@@ -1,4 +1,4 @@
-import { Language, Province } from './../../../../core/user/user.types';
+import { Language, Province } from 'app/core/user/user.types';
 import { combineLatest, Observable, of, switchMap } from 'rxjs';
 import {
   ChangeDetectionStrategy,
@@ -96,7 +96,7 @@ export class SettingsAccountComponent implements OnInit {
         }
 
         this._userService.update(this.accountForm.value).subscribe(() => {
-          Swal.fire('Profile update!', '', 'success');
+          Swal.fire('Profile updated!', '', 'success');
         });
       }
     });

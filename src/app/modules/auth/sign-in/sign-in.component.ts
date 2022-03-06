@@ -68,7 +68,6 @@ export class AuthSignInComponent implements OnInit {
   }
 
   _navigateEF(): void {
-    console.log('ef ==========');
     // Navigate to the redirect url
     this._router.navigateByUrl('/email-verification');
   }

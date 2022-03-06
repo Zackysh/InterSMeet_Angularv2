@@ -10,11 +10,11 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { FuseAlertModule } from '@fuse/components/alert';
 import { SharedModule } from 'app/shared/shared.module';
-import { SettingsComponent } from 'app/modules/auth/settings/settings.component';
-import { SettingsAccountComponent } from 'app/modules/auth/settings/account/account.component';
-import { SettingsSecurityComponent } from 'app/modules/auth/settings/security/security.component';
-import { SettingsPlanBillingComponent } from 'app/modules/auth/settings/plan-billing/plan-billing.component';
-import { settingsRoutes } from 'app/modules/auth/settings/settings.routing';
+import { SettingsComponent } from 'app/modules/settings/settings.component';
+import { SettingsAccountComponent } from 'app/modules/settings/account/account.component';
+import { SettingsSecurityComponent } from 'app/modules/settings/security/security.component';
+import { SettingsPlanBillingComponent } from 'app/modules/settings/plan-billing/plan-billing.component';
+import { settingsRoutes } from 'app/modules/settings/settings.routing';
 
 @NgModule({
     declarations: [

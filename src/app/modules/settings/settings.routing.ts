@@ -1,5 +1,5 @@
 import { Route } from '@angular/router';
-import { SettingsComponent } from 'app/modules/auth/settings/settings.component';
+import { SettingsComponent } from 'app/modules/settings/settings.component';
 
 export const settingsRoutes: Route[] = [
     {

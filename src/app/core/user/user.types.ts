@@ -76,6 +76,21 @@ export interface Province {
   name: string;
 }
 
+export interface Degree {
+  degreeId: number;
+  name: string;
+  levelId: number;
+  familyId: number;
+}
+export interface Level {
+  levelId: number;
+  name: string;
+}
+export interface Family {
+  familyId: number;
+  name: string;
+}
+
 export interface Language {
   languageId: number;
   name: string;
