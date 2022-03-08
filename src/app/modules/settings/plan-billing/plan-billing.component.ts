@@ -5,6 +5,8 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { AuthService } from 'app/core/auth/auth.service';
+import { UserService } from 'app/core/user/user.service';
 
 @Component({
   selector: 'settings-plan-billing',
@@ -15,29 +17,31 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 export class SettingsPlanBillingComponent implements OnInit {
   planBillingForm: FormGroup;
   plans: any[];
+  selectedPlan: 'premium' | 'basic' = 'basic';
 
-  /**
-   * Constructor
-   */
-  constructor(private _formBuilder: FormBuilder) {}
+  constructor(
+    private _formBuilder: FormBuilder,
+    private _authService: AuthService,
+    private _userService: UserService
+  ) {}
 
   // -----------------------------------------------------------------------------------------------------
   // @ Lifecycle hooks
   // -----------------------------------------------------------------------------------------------------
 
-  /**
-   * On init
-   */
   ngOnInit(): void {
     // Create the form
     this.planBillingForm = this._formBuilder.group({
-      plan: ['team'],
       cardHolder: [''],
       cardNumber: [''],
       cardExpiration: [''],
       cardCVC: [''],
       country: ['es'],
       zip: [''],
+    });
+
+    this._userService.user$.subscribe((user) => {
+      this.selectedPlan = user.isPremium ? 'premium' : 'basic';
     });
 
     // Setup the plans
@@ -49,8 +53,8 @@ export class SettingsPlanBillingComponent implements OnInit {
         price: '0',
       },
       {
-        value: 'team',
-        label: 'TEAM',
+        value: 'premium',
+        label: 'PREMIUM',
         details:
           'In addition, search and contact with any student registered in our platform.',
         price: '9',
@@ -61,6 +65,12 @@ export class SettingsPlanBillingComponent implements OnInit {
   // -----------------------------------------------------------------------------------------------------
   // @ Public methods
   // -----------------------------------------------------------------------------------------------------
+
+  changePlan(): void {
+    this._authService
+      .togglePremiun(this.selectedPlan)
+      .subscribe();
+  }
 
   /**
    * Track by function for ngFor loops

@@ -1,7 +1,16 @@
+import { defaultNavigation } from 'app/mock-api/common/navigation/data';
+import { FuseNavigationService } from '@fuse/components/navigation';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { UserService } from 'app/core/user/user.service';
-import { catchError, map, Observable, of, switchMap } from 'rxjs';
+import {
+  catchError,
+  map,
+  Observable,
+  of,
+  switchMap,
+  combineLatest,
+} from 'rxjs';
 import { User } from '../user/user.types';
 
 @Injectable()
@@ -43,13 +52,53 @@ export class AuthService {
     localStorage.setItem('mailVerified', `${verified}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  get isPremium(): boolean {
+    return JSON.parse(localStorage.getItem('premium')) === true;
+  }
+
+  set isPremium(premium: boolean) {
+    localStorage.setItem('premium', `${premium}`);
+  }
+
   // -----------------------------------------------------------------------------------------------------
   // @ Public methods
   // -----------------------------------------------------------------------------------------------------
 
-  // -----------------------------------------------------------------------------------------------------
+  // @ Premium
+
+  /**
+   * Placeholder for stripe.
+   *
+   * @returns true if new plan is premium
+   * @returns false if new plan is basic
+   */
+  togglePremiun(plan: 'premium' | 'basic'): Observable<boolean> {
+    console.log(plan);
+
+    if (plan !== 'basic' && plan !== 'premium') {
+      window.alert('nooooooooo');
+    }
+    if (this.isPremium && plan === 'premium') {
+      return of(true);
+    }
+    if (!this.isPremium && plan === 'basic') {
+      return of(false);
+    }
+
+    return combineLatest([
+      this._userService.user$,
+      this._httpClient.put('core/companies/premium', null),
+    ]).pipe(
+      switchMap(([user]) => {
+        this.isPremium = !this.isPremium;
+        this._userService.user = { ...user, isPremium: this.isPremium };
+        return of(this.isPremium);
+      })
+    );
+  }
+
   // @ Email
-  // -----------------------------------------------------------------------------------------------------
 
   emailVerification(accessToken: string, code: string): Observable<any> {
     return this._httpClient
@@ -97,6 +146,8 @@ export class AuthService {
       );
   }
 
+  // @ Password
+
   sendRestorePasswordCode(credential: string): Observable<any> {
     return this._httpClient.post(
       `core/users/send-restore-password/${credential}`,
@@ -131,6 +182,8 @@ export class AuthService {
     });
   }
 
+  // @ Basic auth
+
   signIn(credentials: {
     email: string;
     password: string;
@@ -154,6 +207,7 @@ export class AuthService {
             this._userService.user = response.user;
 
             this.mailVerified = response.user.emailVerified ? true : false;
+            this.isPremium = response.user.isPremium;
 
             // Return a new observable with the response
             return of(response.user);

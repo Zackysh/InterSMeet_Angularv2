@@ -12,26 +12,23 @@ import {
 } from '@angular/router';
 import { Observable, of, switchMap } from 'rxjs';
 import { AuthService } from 'app/core/auth/auth.service';
+import { FuseNavigationService } from '@fuse/components/navigation';
+import { defaultNavigation } from 'app/mock-api/common/navigation/data';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
-  /**
-   * Constructor
-   */
-  constructor(private _authService: AuthService, private _router: Router) {}
+  constructor(
+    private _authService: AuthService,
+    private _fuseNavigationService: FuseNavigationService,
+    private _router: Router
+  ) {}
 
   // -----------------------------------------------------------------------------------------------------
   // @ Public methods
   // -----------------------------------------------------------------------------------------------------
 
-  /**
-   * Can activate
-   *
-   * @param route
-   * @param state
-   */
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
@@ -92,6 +89,15 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
 
           // Prevent the access
           return of(false);
+        }
+
+        const item = this._fuseNavigationService.getItem(
+          'student-search',
+          defaultNavigation
+        );
+
+        if (this._authService.isPremium) {
+          item.hidden = (): boolean => false;
         }
 
         // Allow the access

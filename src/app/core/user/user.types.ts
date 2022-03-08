@@ -3,6 +3,7 @@ export interface User {
   companyId: number;
   username: string;
   email: string;
+  isPremium: boolean;
   firstName: string;
   lastName: string;
   provinceId: number;
