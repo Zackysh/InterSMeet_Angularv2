@@ -57,8 +57,7 @@ export class OfferListListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._unsubscribeAll))
       .subscribe((offers: Offer[]) => {
         this.offers = offers;
-        // eslint-disable-next-line no-debugger
-        debugger;
+
         this._changeDetectorRef.markForCheck();
       });
 

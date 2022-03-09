@@ -122,7 +122,7 @@ export class OfferService {
 
   createOffer(offer: Offer): Observable<Offer> {
     return this._httpClient
-      .post<Offer>('core/offers', offer)
+      .post<Offer>('core/offers', { ...offer, degrees: [1, 2, 3] })
       .pipe(tap((res) => this._offers.next([...this._offers.value, res])));
   }
 
@@ -163,8 +163,6 @@ export class OfferService {
     studentId: number,
     status: ApplicantStatus
   ): void {
-    // eslint-disable-next-line no-debugger
-    debugger;
     const offer = this._offers.value.find((o) => o.offerId === offerId);
 
     if (offer) {
